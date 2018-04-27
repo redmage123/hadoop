@@ -1,0 +1,21 @@
+<!--
+ This configuration setting provides the default path which will be used by the Hadoop FS client when none is provided.
+ We can use the HA-enabled logical URI which we assigned to the cluster in the hdfs-site.xml file.
+-->
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://testcluster</value>
+  </property>
+
+
+  <!--
+  This configuration setting defines the absolute path to where the JournalNode
+  will store its edits data and the local state. We will only provide a single path for this configuration.
+  -->
+
+
+  <property>
+    <name>dfs.journalnode.edits.dir</name>
+    <value>/path/to/the/journal/node/data/directory</value>
+  </property>
+

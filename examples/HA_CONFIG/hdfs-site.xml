@@ -1,0 +1,120 @@
+<!-- This is the logical name for the cluster to be set up.  The 
+     name property is used as the logical name for the cluster in all
+     other configuration settings as well as the authority component
+    of absolute HDFS paths
+    -->
+
+  <property>
+    <name>dfs.nameservice</name>
+    <value>testcluster</value>
+  </property>
+
+
+<!-- Define how many namennodes are in the cluster -->
+  <property>
+    <name>dfs.ha.namenodes.testcluster</name>
+    <value>namenode1,namenode2,namenode3</value>
+  </property>
+
+
+  <!-- Defines the rpc port for each name node in the cluster -->
+
+  <property>
+    <name>dfs.namenode.rpc-address.testcluster.namenode1</name>
+    <value>machine1.example.com:9820</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.rpc-address.testcluster.namenode2</name>
+    <value>machine2.example.com:9820</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.rpc-address.testcluster.namenode3</name>
+    <value>machine3.example.com:9820</value>
+  </property>
+
+  <!-- Define the fully qualified URL of each namenode -->
+  <property>
+    <name>dfs.namenode.http-address.testcluster.namenode1</name>
+    <value>machine1.example.com:9870</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.http-address.testcluster.namenode2</name>
+    <value>machine2.example.com:9870</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.http-address.testcluster.namenode3</name>
+    <value>machine3.example.com:9870</value>
+  </property>
+
+
+  <!-- 
+  This configuration will define the URI of the daemon where the Journal Node is present so that Active NameNode can write the edit logs and Standby NameNodes can read the edit logs from.
+
+  Let us assume that the Journal Nodes are running on the following machines:
+
+  node1.example.com
+  node2.example.com
+  node3.example.com
+  and our nameservice id is same as above i.e. “testcluster”. The default port for the Journal Node is 8485.
+  -->
+  <property>
+    <name>dfs.namenode.shared.edits.dir</name>
+    <value>qjournal://node1.example.com:8485;node2.example.com:8485;node2.example.com:8485/testcluster</value>
+  </property>
+
+
+
+  <!--
+
+  Failover proxy provider is the Java class from the Hadoop Package which will be used by HDFS clients to determine which NameNode is the Active node and need to be used to serve client requests.
+
+  As of now, there are two implementations which comes with the Hadoop Package, they are:
+
+  ConfiguredFailoverProxyProvider
+  RequestHedgingProxyProvider
+
+  -->
+  <property>
+    <name>dfs.client.failover.proxy.provider.testcluster</name>
+    <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailover.ProxyProvider</value>
+  </property>
+
+
+
+
+  <!--
+  It is very important that only one NameNode is active at a time. Quorum Journal Manager makes sure that we have only one active NameNode at a time. But still, in case of any failure on the QJM part, we should have a fencing method to make sure it never happens again.
+
+  There are two fencing methods which can be used:
+
+  sshfence: The sshfence as the name suggests SSH to the target node and uses fuser to kill the process listening to the service’s TCP port. This allows us to make sure that the failed Active NameNode is not longer listening to any requests from clients.
+  shell
+  The shell fencing methos runs a shell command. The configuration is as below:
+
+  -->
+
+
+  <property>
+    <name>dfs.ha.fencing.method</name>
+    <value>sshfence</value>
+  </property>
+  <property>
+    <name>dfs.ha.fencing.ssh.private-key-files</name>
+    <value>/home/exampleuser/.ssh/id_rsa</value>
+   </property>
+
+
+   <!--  This is an example of shell fencing.  It's commented out here, but you can easily replace the above ssh fencing
+         with this. 
+
+
+         <property>
+           <name>dfs.ha.fencing.method</name>
+           <value>shell(/path/to/the/script.sh args1 args2 args3 ...)</value>
+          </property>
+
+   -->
